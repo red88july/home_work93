@@ -7,10 +7,10 @@ export class Album {
     @Prop( { required: true, unique: true})
     album: string;
 
-    @Prop({type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Artist'}] })
-    artist: Artist
+    @Prop({ ref: Artist.name, required: true, unique: true })
+    artist: mongoose.Schema.Types.ObjectId
 
-    @Prop()
+    @Prop({required: true, min: 0})
     date: number;
 
     @Prop()
