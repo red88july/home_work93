@@ -3,7 +3,20 @@ import {InjectModel} from "@nestjs/mongoose";
 import {Artist, ArtistDocument} from "../schemas/artist.schema";
 import {Model} from "mongoose";
 import {CreateUserDto} from "./create-user.dto";
-import {AnyFilesInterceptor, FileFieldsInterceptor, FileInterceptor} from "@nestjs/platform-express";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from "multer";
+import { extname } from 'path';
+import { randomUUID } from "crypto";
+
+const storage = diskStorage({
+    destination: './public/uploads/artist',
+    filename: (_req, file, cb) => {
+        const name = file.originalname.split('.')[0];
+        const extension = extname(file.originalname);
+        const randomName = randomUUID();
+        cb(null, `${name}-${randomName}${extension}`);
+    },
+});
 
 @Controller('artists')
 export class ArtistsController {
@@ -12,7 +25,8 @@ export class ArtistsController {
     @UseInterceptors(
         FileInterceptor(
             'photo',
-            {dest: './public/uploads/artists'})
+            {storage},
+        )
     )
     postArtist(
         @UploadedFile() file: Express.Multer.File,
