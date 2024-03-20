@@ -4,10 +4,15 @@ import {Artist} from "./artist.schema";
 
 @Schema()
 export class Album {
-    @Prop( { required: true, unique: true})
+    @Prop({
+        required: true,
+        unique: true,
+        autoIndex: true,
+        useCreateIndex: true
+    })
     album: string;
 
-    @Prop({ ref: Artist.name, required: true, unique: true })
+    @Prop({ref: Artist.name, required: true})
     artist: mongoose.Schema.Types.ObjectId
 
     @Prop({required: true, min: 0})

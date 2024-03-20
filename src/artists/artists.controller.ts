@@ -2,10 +2,10 @@ import {
     Body,
     Controller,
     Delete,
-    Get, HttpCode, HttpStatus, InternalServerErrorException, NotAcceptableException, NotFoundException,
+    Get, HttpStatus, NotFoundException,
     Param,
     Post,
-    Res, ServiceUnavailableException, UnprocessableEntityException,
+    Res, UnprocessableEntityException,
     UploadedFile,
 
     UseInterceptors
@@ -13,7 +13,7 @@ import {
 import {InjectModel} from "@nestjs/mongoose";
 import {Artist, ArtistDocument} from "../schemas/artist.schema";
 import {Model} from "mongoose";
-import {CreateUserDto} from "./create-user.dto";
+import {CreateArtistDto} from "./create-artist.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {diskStorage} from "multer";
 import {extname} from 'path';
@@ -41,7 +41,7 @@ export class ArtistsController {
     async postArtist(
         @Res() res: Response,
         @UploadedFile() file: Express.Multer.File,
-        @Body() usersDto: CreateUserDto
+        @Body() usersDto: CreateArtistDto
     ) {
         try {
             const artist = new this.artistModel({
@@ -94,7 +94,7 @@ export class ArtistsController {
             });
     }
 
-    @Delete('delete/:id')
+    @Delete(':id')
     async getByIdAndDelete(
         @Res() res: Response,
         @Param('id') id: string
