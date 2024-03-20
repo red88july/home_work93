@@ -19,6 +19,7 @@ import {diskStorage} from "multer";
 import {extname} from 'path';
 import {randomUUID} from "crypto";
 import {onErrorResumeNext} from "rxjs";
+import {Response} from "express";
 
 const storage = diskStorage({
     destination: './public/uploads/artist',
@@ -36,26 +37,24 @@ export class ArtistsController {
     }
 
     @Post()
-    @UseInterceptors(
-        FileInterceptor(
-            'photo',
-            {storage},
-        )
-    )
-    postArtist(
+    @UseInterceptors(FileInterceptor('photo', {storage}))
+    async postArtist(
+        @Res() res: Response,
         @UploadedFile() file: Express.Multer.File,
         @Body() usersDto: CreateUserDto
     ) {
-
-
-        const user = new this.artistModel({
+        const artist = new this.artistModel({
             author: usersDto.author,
             info: usersDto.info,
             photo: file ? '/uploads/artists/' + file.filename : null,
         })
 
+        await artist.save();
 
-        return user.save();
+        return res.status(HttpStatus.CREATED).json({
+            message: 'Artists successfully created!',
+            artist: artist,
+        })
     }
 
     @Get()
@@ -70,7 +69,7 @@ export class ArtistsController {
 
     @Delete('delete/:id')
     async getByIdAndDelete(
-        @Res() res: any,
+        @Res() res: Response,
         @Param('id') id: string
     ) {
         const artist = await this.artistModel.findById(id);
