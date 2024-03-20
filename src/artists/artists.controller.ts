@@ -1,13 +1,7 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get, HttpStatus, NotFoundException,
-    Param,
-    Post,
-    Res, UnprocessableEntityException,
+    Body, Controller, Delete, Get, HttpStatus, NotFoundException,
+    Param, Post, Res, UnprocessableEntityException,
     UploadedFile,
-
     UseInterceptors
 } from '@nestjs/common';
 import {InjectModel} from "@nestjs/mongoose";
@@ -18,11 +12,10 @@ import {FileInterceptor} from "@nestjs/platform-express";
 import {diskStorage} from "multer";
 import {extname} from 'path';
 import {randomUUID} from "crypto";
-
 import {Response} from "express";
 
 const storage = diskStorage({
-    destination: './public/uploads/artist',
+    destination: './public/uploads/artists',
     filename: (_req, file, cb) => {
         const name = file.originalname.split('.')[0];
         const extension = extname(file.originalname);
@@ -33,8 +26,7 @@ const storage = diskStorage({
 
 @Controller('artists')
 export class ArtistsController {
-    constructor(@InjectModel(Artist.name) private artistModel: Model<ArtistDocument>) {
-    }
+    constructor(@InjectModel(Artist.name) private artistModel: Model<ArtistDocument>) {}
 
     @Post()
     @UseInterceptors(FileInterceptor('photo', {storage}))

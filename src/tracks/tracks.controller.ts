@@ -1,10 +1,7 @@
 import {
-    Body,
-    Controller, Delete, Get,
-    HttpStatus, NotFoundException, Param,
-    Post, Req,
-    Res,
-    UnprocessableEntityException,
+    Body, Controller, Delete, Get,
+    HttpStatus, NotFoundException, Param, Post,
+    Req, Res, UnprocessableEntityException,
 } from '@nestjs/common';
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
@@ -14,7 +11,8 @@ import {CreateTrackDto} from "./create-track.dto";
 
 @Controller('tracks')
 export class TracksController {
-    constructor(@InjectModel(Track.name) private trackModel: Model<TrackDocument>) {}
+    constructor(@InjectModel(Track.name) private trackModel: Model<TrackDocument>) {
+    }
 
     @Post()
     async postArtist(

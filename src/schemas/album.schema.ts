@@ -13,7 +13,7 @@ export class Album {
     album: string;
 
     @Prop({ref: Artist.name, required: true})
-    artist: mongoose.Schema.Types.ObjectId
+    artist: mongoose.Schema.Types.ObjectId;
 
     @Prop({required: true, min: 0})
     date: number;
@@ -23,7 +23,6 @@ export class Album {
 
     @Prop({default: false})
     isPublished: boolean;
-
 }
 
 export const AlbumSchema = SchemaFactory.createForClass(Album);

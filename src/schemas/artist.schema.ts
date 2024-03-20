@@ -3,7 +3,6 @@ import { Document } from "mongoose";
 
 @Schema ()
 export class Artist {
-
     @Prop({
         unique: true,
         required: true,

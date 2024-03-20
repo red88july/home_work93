@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import {FileInterceptor} from "@nestjs/platform-express";
 import {Request, Response} from "express";
-import {CreateArtistDto} from "../artists/create-artist.dto";
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
 import {Album, AlbumDocument} from "../schemas/album.schema";
@@ -20,7 +19,7 @@ import {randomUUID} from "crypto";
 import {CreateAlbumDto} from "./create-album.dto";
 
 const storage = diskStorage({
-    destination: './public/uploads/album',
+    destination: './public/uploads/albums',
     filename: (_req, file, cb) => {
         const name = file.originalname.split('.')[0];
         const extension = extname(file.originalname);
@@ -31,9 +30,7 @@ const storage = diskStorage({
 
 @Controller('albums')
 export class AlbumsController {
-
-    constructor(@InjectModel(Album.name) private albumModel: Model<AlbumDocument>) {
-    }
+    constructor(@InjectModel(Album.name) private albumModel: Model<AlbumDocument>) {}
 
     @Post()
     @UseInterceptors(FileInterceptor('image', {storage}))
@@ -47,7 +44,7 @@ export class AlbumsController {
                 album: albumsDto.album,
                 artist: albumsDto.artist,
                 date: albumsDto.date,
-                image: file ? '/uploads/album/' + file.filename : null,
+                image: file ? '/uploads/albums/' + file.filename : null,
             })
 
             await album.save();
@@ -59,7 +56,6 @@ export class AlbumsController {
         } catch (e) {
             throw new UnprocessableEntityException(`Cannot work with this data ${e}`);
         }
-
     }
 
     @Get()
@@ -105,7 +101,6 @@ export class AlbumsController {
         @Param('id') id: string
     ) {
         const album = await this.albumModel.findById(id);
-
         if (!album) {
             throw new NotFoundException(`Album with id: ${id} not found`);
         }
