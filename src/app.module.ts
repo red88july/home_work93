@@ -11,7 +11,7 @@ import {Track, TrackSchema} from "./schemas/track.schema";
 
 @Module({
     imports: [
-        MongooseModule.forRoot('mongodb://localhost/music'),
+        MongooseModule.forRoot('mongodb://localhost/musicNest'),
         MongooseModule.forFeature([
             {name: Artist.name, schema: ArtistSchema},
             {name: Album.name, schema: AlbumSchema},

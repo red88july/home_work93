@@ -1,9 +1,15 @@
-import { Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
+import {MongooseModule, Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import { Document } from "mongoose";
 
 @Schema ()
 export class Artist {
-    @Prop({required: true, unique: true})
+
+    @Prop({
+        unique: true,
+        required: true,
+        autoIndex: true,
+        useCreateIndex: true
+    })
     author: string;
 
     @Prop()

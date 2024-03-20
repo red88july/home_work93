@@ -2,10 +2,10 @@ import {
     Body,
     Controller,
     Delete,
-    Get, HttpStatus, NotFoundException,
+    Get, HttpCode, HttpStatus, InternalServerErrorException, NotAcceptableException, NotFoundException,
     Param,
     Post,
-    Res,
+    Res, ServiceUnavailableException, UnprocessableEntityException,
     UploadedFile,
 
     UseInterceptors
@@ -18,6 +18,7 @@ import {FileInterceptor} from "@nestjs/platform-express";
 import {diskStorage} from "multer";
 import {extname} from 'path';
 import {randomUUID} from "crypto";
+
 import {Response} from "express";
 
 const storage = diskStorage({
@@ -42,28 +43,55 @@ export class ArtistsController {
         @UploadedFile() file: Express.Multer.File,
         @Body() usersDto: CreateUserDto
     ) {
-        const artist = new this.artistModel({
-            author: usersDto.author,
-            info: usersDto.info,
-            photo: file ? '/uploads/artists/' + file.filename : null,
-        })
+        try {
+            const artist = new this.artistModel({
+                author: usersDto.author,
+                info: usersDto.info,
+                photo: file ? '/uploads/artists/' + file.filename : null,
+            })
 
-        await artist.save();
+            await artist.save();
 
-        return res.status(HttpStatus.CREATED).json({
-            message: 'Artists successfully created!',
-            artist: artist,
-        })
+            return res.status(HttpStatus.CREATED).json({
+                message: 'Artists successfully created!',
+                artist: artist,
+            })
+        } catch (e) {
+            throw new UnprocessableEntityException(`Cannot work with this data ${e}`);
+        }
     }
 
     @Get()
-    getAll() {
-        return this.artistModel.find();
+    async getAll(
+        @Res() res: Response,
+    ) {
+
+        const getAllArtist = await this.artistModel.find();
+        if (getAllArtist.length === 0) {
+            throw new UnprocessableEntityException(`Artists not found!`);
+        }
+
+        return res.status(HttpStatus.OK).json({
+            message: `All artist is successfully GET!`,
+            artist: getAllArtist
+        });
     }
 
     @Get(':id')
-    getOneArtist(@Param('id') id: string) {
-        return this.artistModel.findById(id);
+    async getOneArtist(
+        @Res() res: Response,
+        @Param('id') id: string) {
+
+        const getOneArtist = await this.artistModel.findById(id);
+        if (!getOneArtist) {
+            throw new NotFoundException(`Artist with id: ${id} not found`);
+        }
+
+        return res.status(HttpStatus.OK)
+            .json({
+                message: `Artist with id ${id} found`,
+                artist: getOneArtist
+            });
     }
 
     @Delete('delete/:id')
@@ -74,13 +102,13 @@ export class ArtistsController {
         const artist = await this.artistModel.findById(id);
 
         if (!artist) {
-            throw new NotFoundException('User not found');
+            throw new NotFoundException(`Artist with id: ${id} not found`);
         }
 
         const deletedArtist = await this.artistModel.findByIdAndDelete(id)
         return res.status(HttpStatus.OK)
             .json({
-                message: 'User was been deleted',
+                message: `Artist with id ${id} was been deleted`,
                 artist: deletedArtist
             });
     }
