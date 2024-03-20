@@ -2,12 +2,12 @@ import {
     Body,
     Controller,
     Delete,
-    Get, HttpException, HttpStatus, Next, NotFoundException,
+    Get, HttpStatus, NotFoundException,
     Param,
     Post,
-    Req, Res,
+    Res,
     UploadedFile,
-    UploadedFiles,
+
     UseInterceptors
 } from '@nestjs/common';
 import {InjectModel} from "@nestjs/mongoose";
@@ -18,7 +18,6 @@ import {FileInterceptor} from "@nestjs/platform-express";
 import {diskStorage} from "multer";
 import {extname} from 'path';
 import {randomUUID} from "crypto";
-import {onErrorResumeNext} from "rxjs";
 import {Response} from "express";
 
 const storage = diskStorage({
