@@ -37,7 +37,7 @@ export class AlbumsController {
 
     @Post()
     @UseInterceptors(FileInterceptor('image', {storage}))
-    async postArtist(
+    async postAlbums(
         @Res() res: Response,
         @UploadedFile() file: Express.Multer.File,
         @Body() albumsDto: CreateAlbumDto
@@ -61,8 +61,9 @@ export class AlbumsController {
         }
 
     }
+
     @Get()
-    async getAll(
+    async getAlbumsAndGetByArtist(
         @Req() req: Request,
         @Res() res: Response,
     ) {

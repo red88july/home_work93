@@ -5,20 +5,19 @@ import {Album} from "./album.schema";
 @Schema()
 export class Track {
     @Prop({required: true})
+    number: number;
+
+    @Prop({required: true})
     track: string;
 
-    @Prop({type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Album'}]})
-    album: Album
+    @Prop({ref: Album.name, required: true})
+    album: mongoose.Schema.Types.ObjectId
 
     @Prop({required: true})
     duration: string;
 
-    @Prop({required: true})
-    number: number;
-
     @Prop({default: false})
     isPublished: boolean;
-
 }
 
 export const TrackSchema = SchemaFactory.createForClass(Track);
