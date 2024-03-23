@@ -1,20 +1,23 @@
 import {
-  Body, ConflictException,
+  Body,
   Controller,
-  Post, Res,
+  Post,
+  Req,
   UnprocessableEntityException,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../schemas/users.schema';
-import mongoose, {Model, mongo} from 'mongoose';
+import mongoose, { Model, mongo } from 'mongoose';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
 import { CreateUserDto } from './create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {Response} from "express";
+import { Request } from 'express';
+import { AuthGuard } from '@nestjs/passport';
 
 const storage = diskStorage({
   destination: './public/uploads/avatars',
@@ -50,12 +53,18 @@ export class UsersController {
       user.generatedToken();
       await user.save();
 
-      return {message: 'User create successfully!', user};
+      return { message: 'User create successfully!', user };
     } catch (e) {
       if (e instanceof mongoose.Error.ValidationError) {
-        throw new UnprocessableEntityException(e)
+        throw new UnprocessableEntityException(e);
       }
-     throw e;
+      throw e;
     }
+  }
+
+  @UseGuards(AuthGuard('local'))
+  @Post('sessions')
+  async login(@Req() req: Request) {
+    return req.user;
   }
 }
