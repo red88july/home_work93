@@ -3,11 +3,9 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   NotFoundException,
   Param,
   Post,
-  Res,
   UnprocessableEntityException,
   UploadedFile,
   UseInterceptors,
@@ -20,7 +18,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
-import { Response } from 'express';
 
 const storage = diskStorage({
   destination: './public/uploads/artists',
@@ -53,10 +50,7 @@ export class ArtistsController {
 
       await artist.save();
 
-      return {
-        message: 'Artists successfully created!',
-        artist,
-      };
+      return {message: 'Artists successfully created!', artist};
     } catch (e) {
       if (e instanceof mongoose.Error.ValidationError) {
         throw new UnprocessableEntityException(e);
@@ -72,10 +66,7 @@ export class ArtistsController {
       throw new UnprocessableEntityException(`Artists not found!`);
     }
 
-    return {
-      message: `All artist is successfully GET!`,
-      getAllArtist,
-    };
+    return {message: `All artist is successfully GET!`, getAllArtist};
   }
 
   @Get(':id')
@@ -85,10 +76,7 @@ export class ArtistsController {
       throw new NotFoundException(`Artist with id: ${id} not found`);
     }
 
-    return {
-      message: `Artist with id ${id} found`,
-      getOneArtist,
-    };
+    return {message: `Artist with id ${id} found`, getOneArtist};
   }
 
   @Delete(':id')
@@ -100,9 +88,6 @@ export class ArtistsController {
     }
 
     const deletedArtist = await this.artistModel.findByIdAndDelete(id);
-    return {
-      message: `Artist with id ${id} was been deleted`,
-      deletedArtist,
-    };
+    return {message: `Artist with id ${id} was been deleted`, deletedArtist};
   }
 }

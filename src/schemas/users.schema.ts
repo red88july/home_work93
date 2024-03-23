@@ -17,7 +17,6 @@ export class User {
         required: true,
         autoIndex: true,
         useCreateIndex: true,
-        dropIndex: true
     })
     email: string;
 
