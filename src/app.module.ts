@@ -9,6 +9,7 @@ import {Artist, ArtistSchema} from "./schemas/artist.schema";
 import {Album, AlbumSchema} from "./schemas/album.schema";
 import {Track, TrackSchema} from "./schemas/track.schema";
 import { UsersController } from './users/users.controller';
+import {User, UserSchema} from "./schemas/users.schema";
 
 @Module({
     imports: [
@@ -16,7 +17,8 @@ import { UsersController } from './users/users.controller';
         MongooseModule.forFeature([
             {name: Artist.name, schema: ArtistSchema},
             {name: Album.name, schema: AlbumSchema},
-            {name: Track.name, schema: TrackSchema}
+            {name: Track.name, schema: TrackSchema},
+            {name: User.name, schema: UserSchema}
         ])
     ],
     controllers: [AppController, ArtistsController, AlbumsController, TracksController, UsersController],

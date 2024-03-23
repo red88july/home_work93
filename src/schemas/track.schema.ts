@@ -2,7 +2,7 @@ import {SchemaFactory, Schema, Prop} from "@nestjs/mongoose";
 import mongoose, {Document} from "mongoose";
 import {Album} from "./album.schema";
 
-@Schema()
+@Schema({versionKey: false})
 export class Track {
     @Prop({required: true})
     number: number;

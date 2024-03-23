@@ -2,7 +2,7 @@ import {SchemaFactory, Schema, Prop} from "@nestjs/mongoose";
 import mongoose, {Document} from "mongoose";
 import {Artist} from "./artist.schema";
 
-@Schema()
+@Schema({versionKey: false})
 export class Album {
     @Prop({
         required: true,
