@@ -11,8 +11,7 @@ import {CreateTrackDto} from "./create-track.dto";
 import {Roles} from "../auth/roles.decorator";
 import {Role} from "../enums/role.enum";
 import {TokenAuthGuard} from "../auth/token-auth.guard";
-import {RolesGuardsAdmin} from "../guards/roleAdmin-guard.guard";
-import {RolesGuardsUser} from "../guards/roleUser-guard.guard";
+import {RolesGuards} from "../auth/role.guard";
 
 @Controller('tracks')
 export class TracksController {
@@ -20,7 +19,7 @@ export class TracksController {
     }
 
     @Roles(Role.USER)
-    @UseGuards(TokenAuthGuard, RolesGuardsUser)
+    @UseGuards(TokenAuthGuard, RolesGuards)
     @Post()
     async postArtist(@Body() trackDto: CreateTrackDto) {
         try {
@@ -67,7 +66,7 @@ export class TracksController {
     }
 
     @Roles(Role.ADMIN)
-    @UseGuards(TokenAuthGuard, RolesGuardsAdmin)
+    @UseGuards(TokenAuthGuard, RolesGuards)
     @Delete(':id')
     async getByIdAndDelete(@Param('id') id: string) {
         const track = await this.trackModel.findById(id);

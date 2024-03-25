@@ -1,18 +1,11 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  NotFoundException,
-  Param,
-  Post,
-  Req,
-  UnprocessableEntityException,
-  UploadedFile, UseGuards,
-  UseInterceptors,
+  Body, Controller,  Delete,
+  Get,  NotFoundException, Param,
+  Post, Req, UnprocessableEntityException,
+  UploadedFile, UseGuards, UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Album, AlbumDocument } from '../schemas/album.schema';
@@ -23,8 +16,7 @@ import { CreateAlbumDto } from './create-album.dto';
 import {Roles} from "../auth/roles.decorator";
 import {Role} from "../enums/role.enum";
 import {TokenAuthGuard} from "../auth/token-auth.guard";
-import {RolesGuardsAdmin} from "../guards/roleAdmin-guard.guard";
-import {RolesGuardsUser} from "../guards/roleUser-guard.guard";
+import {RolesGuards} from "../auth/role.guard";
 
 const storage = diskStorage({
   destination: './public/uploads/albums',
@@ -43,7 +35,7 @@ export class AlbumsController {
   ) {}
 
   @Roles(Role.USER)
-  @UseGuards(TokenAuthGuard, RolesGuardsUser)
+  @UseGuards(TokenAuthGuard, RolesGuards)
   @Post()
   @UseInterceptors(FileInterceptor('image', { storage }))
   async postAlbums(
@@ -94,7 +86,7 @@ export class AlbumsController {
   }
 
   @Roles(Role.ADMIN)
-  @UseGuards(TokenAuthGuard, RolesGuardsAdmin)
+  @UseGuards(TokenAuthGuard, RolesGuards)
   @Delete(':id')
   async getByIdAndDelete(@Param('id') id: string) {
     const album = await this.albumModel.findById(id);
