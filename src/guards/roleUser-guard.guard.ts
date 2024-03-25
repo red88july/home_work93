@@ -22,7 +22,6 @@ export class RolesGuardsUser implements CanActivate {
         }
 
         if (requireRoleUser && user.role.includes('user')) {
-            console.log('User has user role');
             return true;
         }
     }

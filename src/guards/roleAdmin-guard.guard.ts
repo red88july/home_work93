@@ -22,7 +22,6 @@ export class RolesGuardsAdmin implements CanActivate {
     }
 
     if (requireRoleAdmin && user.role.includes('admin')) {
-      console.log('User has admin role');
       return true;
     }
   }
