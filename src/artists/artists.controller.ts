@@ -5,9 +5,9 @@ import {
   Get,
   NotFoundException,
   Param,
-  Post,
+  Post, Req, SetMetadata,
   UnprocessableEntityException,
-  UploadedFile,
+  UploadedFile, UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,6 +18,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
+import {TokenAuthGuard} from "../auth/token-auth.guard";
+import {RolesGuardsAdmin} from "../users/role-guard.guard";
+import {Role} from "../users/role.enum";
+import {SettlementSignal} from "@nestjs/core/injector/settlement-signal";
+import {Roles} from "../users/roles.decorator";
 
 const storage = diskStorage({
   destination: './public/uploads/artists',
@@ -79,6 +84,9 @@ export class ArtistsController {
     return {message: `Artist with id ${id} found`, getOneArtist};
   }
 
+
+  @Roles(Role.ADMIN)
+  @UseGuards(TokenAuthGuard, RolesGuardsAdmin)
   @Delete(':id')
   async getByIdAndDelete(@Param('id') id: string) {
     const artist = await this.artistModel.findById(id);

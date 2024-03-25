@@ -8,7 +8,7 @@ import {
   Post,
   Req,
   UnprocessableEntityException,
-  UploadedFile,
+  UploadedFile, UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -20,6 +20,10 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
 import { CreateAlbumDto } from './create-album.dto';
+import {Roles} from "../users/roles.decorator";
+import {Role} from "../users/role.enum";
+import {TokenAuthGuard} from "../auth/token-auth.guard";
+import {RolesGuardsAdmin} from "../users/role-guard.guard";
 
 const storage = diskStorage({
   destination: './public/uploads/albums',
@@ -85,7 +89,8 @@ export class AlbumsController {
 
     return {message: `Album with id ${id} found`, getOneAlbum};
   }
-
+  @Roles(Role.ADMIN)
+  @UseGuards(TokenAuthGuard, RolesGuardsAdmin)
   @Delete(':id')
   async getByIdAndDelete(@Param('id') id: string) {
     const album = await this.albumModel.findById(id);

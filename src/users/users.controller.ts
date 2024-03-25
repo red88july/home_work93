@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  Delete,
+  Delete, Get,
   Post,
   Req,
   UnprocessableEntityException,
@@ -19,6 +19,7 @@ import { CreateUserDto } from './create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
+import {TokenAuthGuard} from "../auth/token-auth.guard";
 
 const storage = diskStorage({
   destination: './public/uploads/avatars',
@@ -48,6 +49,7 @@ export class UsersController {
         email: usersDto.email,
         password: usersDto.password,
         displayName: usersDto.displayName,
+        role: usersDto.role,
         avatar: file ? '/uploads/avatars/' + file.filename : null,
       });
 
@@ -66,12 +68,24 @@ export class UsersController {
   @UseGuards(AuthGuard('local'))
   @Post('sessions')
   async login(@Req() req: Request) {
-    return req.user;
+    return {
+      message: "User authenticate is correct!",
+      user: req.user
+    };
+  }
+
+  @UseGuards(TokenAuthGuard)
+  @Get('secret')
+  async secret(@Req() req: Request) {
+    return {
+      message: 'Secret message',
+      user: req.user
+    }
   }
 
   @Delete('sessions')
   async logout(@Req() req: Request) {
-    
+
     try {
       const message = { message: 'Success' };
       const headerValue = req.get('Authorization');
@@ -89,9 +103,11 @@ export class UsersController {
       }
 
       user.generatedToken();
-      await user.save();
 
+
+      await user.save();
       return message;
+
     } catch (e) {
       throw e;
     }

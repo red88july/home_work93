@@ -13,6 +13,8 @@ import {User, UserSchema} from "./schemas/users.schema";
 import { AuthService } from './auth/auth.service';
 import {PassportModule} from "@nestjs/passport";
 import {LocalStrategy} from "./auth/local.strategy";
+import {TokenAuthGuard} from "./auth/token-auth.guard";
+import {RolesGuardsAdmin} from "./users/role-guard.guard";
 
 @Module({
     imports: [
@@ -26,6 +28,6 @@ import {LocalStrategy} from "./auth/local.strategy";
         PassportModule,
     ],
     controllers: [AppController, ArtistsController, AlbumsController, TracksController, UsersController],
-    providers: [AppService, AuthService, LocalStrategy],
+    providers: [AppService, AuthService, LocalStrategy, TokenAuthGuard, RolesGuardsAdmin],
 })
 export class AppModule {}

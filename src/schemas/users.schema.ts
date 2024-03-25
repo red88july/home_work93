@@ -3,6 +3,7 @@ import {Document} from 'mongoose';
 import {randomUUID} from "crypto";
 
 import { hash, compare, genSalt } from 'bcrypt';
+import {Role} from "../users/role.enum";
 
 const SALT_WORK = 10;
 
@@ -28,10 +29,10 @@ export class User {
 
     @Prop({
         required: true,
-        enum: ['admin', 'user'],
-        default: 'user'
+        enum: Role,
+        default: Role.USER
     })
-    role: string;
+    role: Role;
 
     @Prop({required: true})
     displayName: string;
