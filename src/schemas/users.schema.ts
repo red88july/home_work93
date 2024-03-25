@@ -3,7 +3,7 @@ import {Document} from 'mongoose';
 import {randomUUID} from "crypto";
 
 import { hash, compare, genSalt } from 'bcrypt';
-import {Role} from "../users/role.enum";
+import {Role} from "../enums/role.enum";
 
 const SALT_WORK = 10;
 

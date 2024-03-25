@@ -20,10 +20,11 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
 import { CreateAlbumDto } from './create-album.dto';
-import {Roles} from "../users/roles.decorator";
-import {Role} from "../users/role.enum";
+import {Roles} from "../auth/roles.decorator";
+import {Role} from "../enums/role.enum";
 import {TokenAuthGuard} from "../auth/token-auth.guard";
-import {RolesGuardsAdmin} from "../users/role-guard.guard";
+import {RolesGuardsAdmin} from "../guards/roleAdmin-guard.guard";
+import {RolesGuardsUser} from "../guards/roleUser-guard.guard";
 
 const storage = diskStorage({
   destination: './public/uploads/albums',
@@ -41,6 +42,8 @@ export class AlbumsController {
     @InjectModel(Album.name) private albumModel: Model<AlbumDocument>,
   ) {}
 
+  @Roles(Role.USER)
+  @UseGuards(TokenAuthGuard, RolesGuardsUser)
   @Post()
   @UseInterceptors(FileInterceptor('image', { storage }))
   async postAlbums(
@@ -89,6 +92,7 @@ export class AlbumsController {
 
     return {message: `Album with id ${id} found`, getOneAlbum};
   }
+
   @Roles(Role.ADMIN)
   @UseGuards(TokenAuthGuard, RolesGuardsAdmin)
   @Delete(':id')

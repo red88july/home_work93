@@ -1,19 +1,26 @@
 import {
     Body, Controller, Delete, Get,
     NotFoundException, Param, Post,
-    Req,UnprocessableEntityException,
+    Req, UnprocessableEntityException, UseGuards,
 } from '@nestjs/common';
 import {InjectModel} from "@nestjs/mongoose";
 import mongoose, {Model} from "mongoose";
-import {Request, Response} from "express";
+import {Request} from "express";
 import {Track, TrackDocument} from "../schemas/track.schema";
 import {CreateTrackDto} from "./create-track.dto";
+import {Roles} from "../auth/roles.decorator";
+import {Role} from "../enums/role.enum";
+import {TokenAuthGuard} from "../auth/token-auth.guard";
+import {RolesGuardsAdmin} from "../guards/roleAdmin-guard.guard";
+import {RolesGuardsUser} from "../guards/roleUser-guard.guard";
 
 @Controller('tracks')
 export class TracksController {
     constructor(@InjectModel(Track.name) private trackModel: Model<TrackDocument>) {
     }
 
+    @Roles(Role.USER)
+    @UseGuards(TokenAuthGuard, RolesGuardsUser)
     @Post()
     async postArtist(@Body() trackDto: CreateTrackDto) {
         try {
@@ -59,6 +66,8 @@ export class TracksController {
         return {message: `Track with id ${id} found`, getOneTrack};
     }
 
+    @Roles(Role.ADMIN)
+    @UseGuards(TokenAuthGuard, RolesGuardsAdmin)
     @Delete(':id')
     async getByIdAndDelete(@Param('id') id: string) {
         const track = await this.trackModel.findById(id);

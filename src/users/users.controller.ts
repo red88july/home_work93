@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  Delete, Get,
+  Delete,
   Post,
   Req,
   UnprocessableEntityException,
@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../schemas/users.schema';
-import mongoose, { Model, mongo } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
@@ -19,7 +19,6 @@ import { CreateUserDto } from './create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
-import {TokenAuthGuard} from "../auth/token-auth.guard";
 
 const storage = diskStorage({
   destination: './public/uploads/avatars',
@@ -74,15 +73,6 @@ export class UsersController {
     };
   }
 
-  @UseGuards(TokenAuthGuard)
-  @Get('secret')
-  async secret(@Req() req: Request) {
-    return {
-      message: 'Secret message',
-      user: req.user
-    }
-  }
-
   @Delete('sessions')
   async logout(@Req() req: Request) {
 
@@ -103,11 +93,9 @@ export class UsersController {
       }
 
       user.generatedToken();
-
-
       await user.save();
-      return message;
 
+      return message;
     } catch (e) {
       throw e;
     }

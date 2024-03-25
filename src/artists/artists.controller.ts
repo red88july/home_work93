@@ -5,24 +5,25 @@ import {
   Get,
   NotFoundException,
   Param,
-  Post, Req, SetMetadata,
+  Post,
   UnprocessableEntityException,
-  UploadedFile, UseGuards,
+  UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Artist, ArtistDocument } from '../schemas/artist.schema';
-import mongoose, { Model, Mongoose } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { CreateArtistDto } from './create-artist.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
-import {TokenAuthGuard} from "../auth/token-auth.guard";
-import {RolesGuardsAdmin} from "../users/role-guard.guard";
-import {Role} from "../users/role.enum";
-import {SettlementSignal} from "@nestjs/core/injector/settlement-signal";
-import {Roles} from "../users/roles.decorator";
+import { TokenAuthGuard } from '../auth/token-auth.guard';
+import { RolesGuardsAdmin } from '../guards/roleAdmin-guard.guard';
+import { Role } from '../enums/role.enum';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuardsUser } from '../guards/roleUser-guard.guard';
 
 const storage = diskStorage({
   destination: './public/uploads/artists',
@@ -40,6 +41,8 @@ export class ArtistsController {
     @InjectModel(Artist.name) private artistModel: Model<ArtistDocument>,
   ) {}
 
+  @Roles(Role.USER)
+  @UseGuards(TokenAuthGuard, RolesGuardsUser)
   @Post()
   @UseInterceptors(FileInterceptor('photo', { storage }))
   async postArtist(
@@ -55,7 +58,7 @@ export class ArtistsController {
 
       await artist.save();
 
-      return {message: 'Artists successfully created!', artist};
+      return { message: 'Artists successfully created!', artist };
     } catch (e) {
       if (e instanceof mongoose.Error.ValidationError) {
         throw new UnprocessableEntityException(e);
@@ -71,7 +74,7 @@ export class ArtistsController {
       throw new UnprocessableEntityException(`Artists not found!`);
     }
 
-    return {message: `All artist is successfully GET!`, getAllArtist};
+    return { message: `All artist is successfully GET!`, getAllArtist };
   }
 
   @Get(':id')
@@ -81,9 +84,8 @@ export class ArtistsController {
       throw new NotFoundException(`Artist with id: ${id} not found`);
     }
 
-    return {message: `Artist with id ${id} found`, getOneArtist};
+    return { message: `Artist with id ${id} found`, getOneArtist };
   }
-
 
   @Roles(Role.ADMIN)
   @UseGuards(TokenAuthGuard, RolesGuardsAdmin)
@@ -96,6 +98,6 @@ export class ArtistsController {
     }
 
     const deletedArtist = await this.artistModel.findByIdAndDelete(id);
-    return {message: `Artist with id ${id} was been deleted`, deletedArtist};
+    return { message: `Artist with id ${id} was been deleted`, deletedArtist };
   }
 }
